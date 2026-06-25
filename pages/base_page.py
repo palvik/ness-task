@@ -34,3 +34,12 @@ class BasePage:
             str(path), name=name, attachment_type=allure.attachment_type.PNG
         )
         return path
+
+    def _dismiss_consent_if_present(self) -> None:
+        """Close cookie/consent banner if it appears. No-op if absent."""
+        banner = self.page.get_by_role("button", name="Accept all")  # TODO: check the text
+        try:
+            if banner.is_visible(timeout=2000):
+                banner.click()
+        except Exception:
+            pass  # banner is not present - this is normal

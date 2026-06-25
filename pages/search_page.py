@@ -6,24 +6,34 @@ method bodies yourself and verify every locator against live eBay
 per the task; prefer get_by_role/label for the filter inputs and Next button.
 """
 from __future__ import annotations
-
 from pages.base_page import BasePage
+from core.config import CONFIG
 from utils.price_parser import parse_price  # noqa: F401  (used once implemented)
+import re
+from playwright.sync_api import expect
 
 
 class SearchPage(BasePage):
     # --- LOCATORS: verify on the live site; eBay class names rotate ---
-    _RESULTS_ITEMS = "xpath=//..."        # TODO: result card containers
+    _RESULTS_ITEMS = "xpath=//li[contains(@class,'s-card')]" 
     _ITEM_LINK = "xpath=.//a[...]"        # TODO: /itm/ link inside a card
     _ITEM_PRICE = "xpath=.//span[...]"    # TODO: price text inside a card
     _PRICE_MAX_INPUT = None               # TODO: smart locator (role/label)
     _APPLY_PRICE_BTN = None               # TODO
     _NEXT_BUTTON = None                   # TODO: e.g. get_by_role("button", name="Next")
+    _SEARCH_INPUT_NAME = "Search for anything"
+    _SEARCH_BUTTON_NAME = "Search"
 
     def open(self, query: str) -> None:
         """Open the results page for `query`."""
-        # TODO: goto search_url with _nkw=query, OR type into the search box + submit
-        raise NotImplementedError
+        self.goto(CONFIG.base_url)
+        self._dismiss_consent_if_present()
+        self.page.get_by_role("combobox", name=self._SEARCH_INPUT_NAME).fill(query)
+        self.page.get_by_role("button", name=self._SEARCH_BUTTON_NAME, exact=True).click()
+        expect(self.page).to_have_url(re.compile(r"/sch/"))
+        expect(self.page.locator(self._RESULTS_ITEMS).first).to_be_visible()
+        self.log.info("search opened for query=%r", query)        
+
 
     def apply_max_price(self, max_price: float) -> None:
         """Use the page's min/max price filter to cap at max_price."""
