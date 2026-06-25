@@ -1,0 +1,14 @@
+# Core automation stack
+playwright
+pytest
+pytest-playwright
+
+# Reporting
+allure-pytest
+
+# Config / data-driven
+pyyaml
+python-dotenv
+
+# After first install, freeze exact versions for reproducibility:
+#   pip freeze > requirements.lock.txt

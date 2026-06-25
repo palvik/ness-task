@@ -1,0 +1,23 @@
+# Default profile. Values can be overridden via .env (see core/config.py).
+base_url: "https://www.ebay.com"
+search_path: "/sch/i.html"
+
+browser:
+  name: "chromium"        # chromium | firefox | webkit
+  headless: true
+  slow_mo_ms: 0           # set >0 to watch runs locally
+  viewport:
+    width: 1366
+    height: 900
+
+timeouts:
+  default_ms: 15000       # Playwright auto-wait ceiling
+  navigation_ms: 30000
+
+# Domain assumptions (document these in README)
+currency: "USD"           # we run against ebay.com
+locale: "en-US"
+
+artifacts:
+  trace: true             # write trace.zip per test
+  screenshots: true       # capture on add-to-cart and on failure

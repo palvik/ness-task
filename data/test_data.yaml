@@ -1,0 +1,13 @@
+# Data-Driven inputs (15%). Tests read scenarios from here - no hardcoding.
+scenarios:
+  - name: "shoes_under_220"
+    query: "shoes"
+    max_price: 220
+    limit: 5
+    budget_per_item: 220   # assertCartTotalNotExceeds threshold per item
+
+  - name: "headphones_under_50"
+    query: "headphones"
+    max_price: 50
+    limit: 3
+    budget_per_item: 50
