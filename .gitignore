@@ -9,6 +9,9 @@ env/
 # Env / secrets
 .env
 
+# Local Allure CLI (downloaded by scripts/install-allure.ps1)
+tools/allure/
+
 # Test artifacts & reports
 reports/allure-results/
 reports/screenshots/

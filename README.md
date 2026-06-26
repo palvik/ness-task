@@ -25,10 +25,20 @@ cp config/.env.example .env   # then edit if needed
 ## Run
 ```bash
 pytest                      # runs e2e + unit, writes reports/allure-results
-pytest -m unit              # just the price-parser unit tests
-allure serve reports/allure-results          # interactive report
-# or a self-contained file to commit:
+pytest -m unit              # just the price-parser unit tests (always reliable)
+pytest -m e2e --headed      # e2e against live eBay (headed recommended locally)
+allure serve reports/allure-results          # interactive report (requires Allure CLI)
+# or a self-contained file to share:
 allure generate reports/allure-results --single-file -o reports/html
+# Windows helpers (auto-download Allure CLI to tools/allure on first run):
+.\scripts\allure-serve.ps1
+.\scripts\allure-generate.ps1
+```
+
+For local e2e runs, use headed mode to reduce bot-detection issues:
+
+```bash
+HEADLESS=false pytest -m e2e --headed
 ```
 
 ## Architecture
@@ -54,5 +64,29 @@ allure generate reports/allure-results --single-file -o reports/html
   per the task, semantic locators (role/label) for controls.
 
 ## Reports
-Allure results in `reports/allure-results`; traces in `reports/traces`;
-screenshots in `reports/screenshots`. CI (GitHub Actions) uploads all as artifacts.
+
+Every `pytest` run writes raw Allure data (JSON + attachments) to
+`reports/allure-results/`. That folder is not browsable on its own — use the
+[Allure CLI](https://allurereport.org/docs/install/) or the Windows scripts above
+to render it.
+
+**What is captured**
+
+- Test steps from `allure.step` in the e2e test
+- Playwright trace zips (attached per test from `conftest.py`)
+- Failure screenshots and item screenshots
+
+**Open the report**
+
+| Goal | Command |
+|------|---------|
+| Interactive (recommended) | `allure serve reports/allure-results` or `.\scripts\allure-serve.ps1` |
+| Static HTML file | `allure generate reports/allure-results --single-file -o reports/html` then open `reports/html/index.html` |
+| CI artifacts | Download the `allure-results` artifact from GitHub Actions, extract, then `allure serve path/to/allure-results` |
+
+**Related artifacts**
+
+- Playwright traces: `reports/traces/*.zip` — `playwright show-trace reports/traces/<test_name>.zip`
+- Screenshots: `reports/screenshots/`
+
+CI (GitHub Actions) uploads `allure-results` and `playwright-artifacts` as workflow artifacts.
