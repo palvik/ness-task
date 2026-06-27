@@ -59,7 +59,10 @@ HEADLESS=false pytest -m e2e --headed
 ## Assumptions & limitations  (TODO: fill in)
 - **Login**: guest browsing; no authentication. CAPTCHA explicitly out of scope.
 - **Currency**: USD on ebay.com.
-- **Price ranges**: "$12 to $18" is treated as <lower|upper> bound -> EXPLAIN your choice.
+- **Price ranges**: "$12 to $18" uses the **lower** bound (the "from" price on
+  multi-variant listings). Upper-bound parsing would exclude valid items when
+  comparing against a max-price filter; the cart step uses the actual variant
+  price, not the search-result range.
 - **Locators**: eBay rotates CSS class names; XPath used for result extraction
   per the task, semantic locators (role/label) for controls.
 
