@@ -12,12 +12,15 @@ with sync_playwright() as pw:
 
     sp = SearchPage(page)
     sp.open("shoes")
-    print(">>> open() returned")
-
-    print("URL:", page.url)
     print("cards found:", page.locator(SearchPage._RESULTS_ITEMS).count())
-
+    
+    urls = sp._parse_current_page(max_price=50)
+    print(f"urls under $50: {len(urls)}")
+    for u in urls[:5]:
+        print(" ", u)
+    
     page.wait_for_timeout(4000)
     browser.close()
+    print(">>> done")
 
 print(">>> done")

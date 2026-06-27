@@ -16,9 +16,9 @@ from playwright.sync_api import expect
 class SearchPage(BasePage):
     # --- LOCATORS: verify on the live site; eBay class names rotate ---
     _RESULTS_ITEMS = "xpath=//li[contains(@class,'s-card')]" 
-    _ITEM_LINK = "xpath=.//a[...]"        # TODO: /itm/ link inside a card
-    _ITEM_PRICE = "xpath=.//span[...]"    # TODO: price text inside a card
-    _PRICE_MAX_INPUT = None               # TODO: smart locator (role/label)
+    _ITEM_LINK = "xpath=.//a[contains(@href,'/itm/')]"
+    _ITEM_PRICE = "xpath=.//span[contains(@class,'s-card__price')]"
+    _PRICE_MAX_INPUT = "xpath=.//input[contains(@name,'maxPrice')]"
     _APPLY_PRICE_BTN = None               # TODO
     _NEXT_BUTTON = None                   # TODO: e.g. get_by_role("button", name="Next")
     _SEARCH_INPUT_NAME = "Search for anything"
@@ -42,8 +42,18 @@ class SearchPage(BasePage):
 
     def _parse_current_page(self, max_price: float) -> list[str]:
         """Return cleaned hrefs on the current page with price <= max_price."""
-        # TODO: iterate _RESULTS_ITEMS, parse_price(), filter, strip tracking query
-        raise NotImplementedError
+        hrefs: list[str] = []
+        for card in self.page.locator(self._RESULTS_ITEMS).all():
+            try:
+                price_text = " ".join(card.locator(self._ITEM_PRICE).all_inner_texts())
+                price = parse_price(price_text)
+                if price <= max_price:
+                    href = card.locator(self._ITEM_LINK).first.get_attribute("href")
+                    if href:
+                        hrefs.append(href.split("?")[0])                
+            except ValueError:
+                continue
+        return hrefs
 
     def _go_to_next_page(self) -> bool:
         """Advance to the next page. Return True if it worked, else False."""
