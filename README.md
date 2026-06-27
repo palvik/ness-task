@@ -58,7 +58,11 @@ HEADLESS=false pytest -m e2e --headed
 
 ## Assumptions & limitations  (TODO: fill in)
 - **Login**: guest browsing; no authentication. CAPTCHA explicitly out of scope.
-- **Currency**: USD on ebay.com.
+- **Currency**: eBay displays prices in the currency determined by the
+  runner's geolocation (e.g. ILS when run from Israel, USD from the US).
+  `parse_price()` is currency-agnostic — it extracts the numeric value
+  regardless of symbol/code. `maxPrice`/`budgetPerItem` are compared in
+  whatever currency the site returns; currency conversion is out of scope.
 - **Price ranges**: "$12 to $18" uses the **lower** bound (the "from" price on
   multi-variant listings). Upper-bound parsing would exclude valid items when
   comparing against a max-price filter; the cart step uses the actual variant
