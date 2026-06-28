@@ -1,5 +1,5 @@
 from playwright.sync_api import sync_playwright
-from pages.search_page import SearchPage
+from pages.login_page import LoginPage
 
 print(">>> script started")
 
@@ -10,12 +10,9 @@ with sync_playwright() as pw:
     page = context.new_page()
     print(">>> browser open, calling search_items_by_name_under_price()")
 
-    sp = SearchPage(page)
-    urls = sp.search_items_by_name_under_price("shoes", max_price=50, limit=5)
-
-    print(f"got {len(urls)} urls:")
-    for u in urls:
-        print(" ", u)
+    lp = LoginPage(page)
+    lp.login_as_guest()
+    print("guest session confirmed")
 
     page.wait_for_timeout(4000)
     browser.close()
