@@ -2,16 +2,17 @@
 from __future__ import annotations
 
 from pages.base_page import BasePage
+from utils.price_parser import parse_price
 
 
 class CartPage(BasePage):
-    _SUBTOTAL = None   # TODO: smart locator for subtotal/total text
+    _CART_SUBTOTAL = "[data-test-id='SUBTOTAL']"
 
     def open(self) -> None:
-        # TODO: navigate to cart
-        raise NotImplementedError
+        """Navigate to cart."""
+        self.goto("https://cart.ebay.com")
 
     def get_cart_total(self) -> float:
         """Read the subtotal/total as shown and return a float."""
-        # TODO: read text, reuse utils.price_parser
-        raise NotImplementedError
+        subtotal_text = self.page.locator(self._CART_SUBTOTAL).inner_text()
+        return parse_price(subtotal_text)
