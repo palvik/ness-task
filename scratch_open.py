@@ -8,16 +8,16 @@ with sync_playwright() as pw:
     browser = pw.chromium.launch(headless=False, slow_mo=300)
     context = browser.new_context(base_url="https://www.ebay.com")
     page = context.new_page()
-    print(">>> browser open, calling open()")
+    print(">>> browser open, calling search_items_by_name_under_price()")
 
     sp = SearchPage(page)
-    sp.open("shoes")
-    sp.apply_max_price(50)
-    print("URL after filter:", page.url)
-    print("cards found after filter:", page.locator(SearchPage._RESULTS_ITEMS).count())
+    urls = sp.search_items_by_name_under_price("shoes", max_price=50, limit=5)
 
-    urls = sp._parse_current_page(max_price=50)
-    print(f"urls under 50: {len(urls)}")
-    for u in urls[:5]:
+    print(f"got {len(urls)} urls:")
+    for u in urls:
         print(" ", u)
+
+    page.wait_for_timeout(4000)
+    browser.close()
+
 print(">>> done")

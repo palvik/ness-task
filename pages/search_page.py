@@ -86,6 +86,21 @@ class SearchPage(BasePage):
     def search_items_by_name_under_price(
         self, query: str, max_price: float, limit: int = 5
     ) -> list[str]:
-        """Up to `limit` item URLs priced <= max_price (see designed algorithm)."""
-        # TODO: assemble open -> apply_max_price -> collect across pages -> [:limit]
-        raise NotImplementedError
+        """Up to `limit` item URLs priced <= max_price."""
+        self.open(query)
+        self.apply_max_price(max_price)
+
+        collected: list[str] = []
+        max_pages = 20  # defensive guard against unexpected pagination loops
+
+        for _ in range(max_pages):
+            for url in self._parse_current_page(max_price):
+                if url not in collected:  # skip rare cross-page duplicates
+                    collected.append(url)
+                if len(collected) >= limit:
+                    return collected[:limit]
+
+            if not self._go_to_next_page():
+                return collected
+
+        return collected
