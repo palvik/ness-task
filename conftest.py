@@ -38,11 +38,7 @@ def browser(_playwright) -> Browser:
 
 @pytest.fixture
 def context(browser: Browser, request) -> BrowserContext:
-    ctx = browser.new_context(
-        viewport=CONFIG.viewport,
-        locale=CONFIG.locale,
-        base_url=CONFIG.base_url,
-    )
+    ctx = browser.new_context(...)
     ctx.set_default_timeout(CONFIG.default_timeout_ms)
     ctx.set_default_navigation_timeout(CONFIG.navigation_timeout_ms)
     if CONFIG.trace:
@@ -53,10 +49,15 @@ def context(browser: Browser, request) -> BrowserContext:
     if CONFIG.trace:
         trace_path = TRACES / f"{request.node.name}.zip"
         ctx.tracing.stop(path=str(trace_path))
+        # прикладываем trace в Allure только если тест упал
+        test_failed = (
+            hasattr(request.node, "rep_call") and request.node.rep_call.failed
+        )
         if trace_path.exists():
-            allure.attach.file(
-                str(trace_path), name="trace", extension="zip"
-            )
+            if test_failed:
+                allure.attach.file(str(trace_path), name="trace", extension="zip")
+            else:
+                trace_path.unlink()  # успешный прогон — trace не нужен, удаляем
     ctx.close()
 
 
@@ -70,6 +71,7 @@ def pytest_runtest_makereport(item, call):
     """Attach a screenshot to Allure when a test fails."""
     outcome = yield
     report = outcome.get_result()
+    setattr(item, f"rep_{report.when}", report)
     if report.when == "call" and report.failed:
         page = item.funcargs.get("page")
         if page is not None:
