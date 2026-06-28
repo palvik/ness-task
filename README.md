@@ -79,6 +79,11 @@ HEADLESS=false pytest -m e2e --headed
   aggressive jump (e.g. `_pgn=999`) triggers it. `_go_to_next_page()` is
   wrapped in try/except to gracefully stop pagination on any unexpected page
   state (including a potential challenge page) rather than crashing the run.  
+- **Variant price vs. search-result price**: the price shown in search
+  results may reflect a default/lowest-priced variant. After a random
+  variant (size/color) is selected, the actual cart price can differ.
+  `budget_per_item` in test data includes margin for this; it is not a
+  strict re-validation of the search-time `max_price`.  
 
 ## Reports
 
