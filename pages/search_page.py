@@ -38,8 +38,19 @@ class SearchPage(BasePage):
 
     def apply_max_price(self, max_price: float) -> None:
         """Use the page's min/max price filter to cap at max_price."""
-        # TODO: fill max field, apply, wait for the list to re-render (expect, not sleep)
-        raise NotImplementedError
+        max_input = self.page.get_by_role(
+            "textbox", name=re.compile(r"Maximum Value", re.IGNORECASE)
+        )
+        max_input.click()
+        # eBay's submit button stays disabled until it sees real keystroke events;
+        # fill() sets the value programmatically and doesn't trigger them.
+        max_input.press_sequentially(str(int(max_price)))
+
+        self.page.get_by_role("button", name="Submit price range").click()
+
+        expect(self.page).to_have_url(re.compile(r"_udhi=\d+"))
+        expect(self.page.locator(self._RESULTS_ITEMS).first).to_be_visible()
+        self.log.info("applied max price filter: %s", max_price)
 
     def _parse_current_page(self, max_price: float) -> list[str]:
         """Return cleaned hrefs on the current page with price <= max_price."""
