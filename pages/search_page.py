@@ -8,13 +8,14 @@ per the task; prefer get_by_role/label for the filter inputs and Next button.
 from __future__ import annotations
 from pages.base_page import BasePage
 from core.config import CONFIG
-from utils.price_parser import parse_price  # noqa: F401  (used once implemented)
+from utils.price_parser import parse_price
 import re
 from playwright.sync_api import expect
 
 
 class SearchPage(BasePage):
     # --- LOCATORS: verify on the live site; eBay class names rotate ---
+    _ITEM_ID_RE = re.compile(r"/itm/(\d{9,})")
     _RESULTS_ITEMS = "xpath=//li[contains(@class,'s-card')]" 
     _ITEM_LINK = "xpath=.//a[contains(@href,'/itm/')]"
     _ITEM_PRICE = "xpath=.//span[contains(@class,'s-card__price')]"
@@ -50,7 +51,9 @@ class SearchPage(BasePage):
                 if price <= max_price:
                     href = card.locator(self._ITEM_LINK).first.get_attribute("href")
                     if href:
-                        hrefs.append(href.split("?")[0])                
+                        clean_href = href.split("?")[0]
+                        if self._ITEM_ID_RE.search(clean_href):
+                            hrefs.append(clean_href)        
             except ValueError:
                 continue
         return hrefs

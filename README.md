@@ -69,6 +69,10 @@ HEADLESS=false pytest -m e2e --headed
   price, not the search-result range.
 - **Locators**: eBay rotates CSS class names; XPath used for result extraction
   per the task, semantic locators (role/label) for controls.
+- **Sponsored placeholders**: eBay injects "Shop on eBay" sponsored cards
+  into search results with fake price/ID data (e.g. `/itm/123456`) to blend
+  in with real listings. Filtered out by validating that the item ID in the
+  href matches eBay's real ID format (9+ digits).  
 
 ## Reports
 
