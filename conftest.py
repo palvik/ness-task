@@ -38,7 +38,11 @@ def browser(_playwright) -> Browser:
 
 @pytest.fixture
 def context(browser: Browser, request) -> BrowserContext:
-    ctx = browser.new_context(...)
+    ctx = browser.new_context(
+        viewport=CONFIG.viewport,
+        locale=CONFIG.locale,
+        base_url=CONFIG.base_url,
+    )
     ctx.set_default_timeout(CONFIG.default_timeout_ms)
     ctx.set_default_navigation_timeout(CONFIG.navigation_timeout_ms)
     if CONFIG.trace:
@@ -49,22 +53,21 @@ def context(browser: Browser, request) -> BrowserContext:
     if CONFIG.trace:
         trace_path = TRACES / f"{request.node.name}.zip"
         ctx.tracing.stop(path=str(trace_path))
-        # прикладываем trace в Allure только если тест упал
         test_failed = (
             hasattr(request.node, "rep_call") and request.node.rep_call.failed
-        )
+        )        
         if trace_path.exists():
             if test_failed:
-                allure.attach.file(str(trace_path), name="trace", extension="zip")
+                allure.attach.file(
+                    str(trace_path), name="trace", extension="zip"
+                )
             else:
-                trace_path.unlink()  # успешный прогон — trace не нужен, удаляем
+                trace_path.unlink()
     ctx.close()
-
 
 @pytest.fixture
 def page(context: BrowserContext) -> Page:
     return context.new_page()
-
 
 @pytest.hookimpl(hookwrapper=True)
 def pytest_runtest_makereport(item, call):

@@ -9,6 +9,7 @@ from pathlib import Path
 import allure
 import pytest
 import yaml
+import random
 
 from pages.search_page import SearchPage
 from pages.item_page import ItemPage
@@ -45,6 +46,7 @@ def test_cart_total_within_budget(page, scenario):
             ItemPage(page).open(url)
             ItemPage(page).select_random_variants()
             ItemPage(page).add_to_cart()
+            page.wait_for_timeout(random.randint(800, 2000))  # human-like pause to avoid Captcha
     
     with allure.step(f"Assert cart total not exceeds budget {budget * len(urls)}"):
         cart = CartPage(page)

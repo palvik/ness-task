@@ -73,12 +73,12 @@ HEADLESS=false pytest -m e2e --headed
   into search results with fake price/ID data (e.g. `/itm/123456`) to blend
   in with real listings. Filtered out by validating that the item ID in the
   href matches eBay's real ID format (9+ digits).  
-- **CAPTCHA/anti-bot avoidance**: pagination advances by clicking the real
-  "Next" link rather than jumping via URL params, to avoid triggering eBay's
-  bot-detection (`splashui/challenge`) — confirmed experimentally that an
-  aggressive jump (e.g. `_pgn=999`) triggers it. `_go_to_next_page()` is
-  wrapped in try/except to gracefully stop pagination on any unexpected page
-  state (including a potential challenge page) rather than crashing the run.  
+- **CAPTCHA/anti-bot occurrences**: eBay's bot-detection (`splashui/challenge`)
+  may occasionally trigger during automated runs, especially with rapid
+  sequential actions. Per the task brief, handling CAPTCHA is out of scope.
+  Pages check for the challenge URL and skip the test gracefully (`pytest.skip`)
+  rather than failing with an unrelated timeout. Small randomized delays
+  between cart additions reduce (but don't eliminate) the chance of triggering it.  
 - **Variant price vs. search-result price**: the price shown in search
   results may reflect a default/lowest-priced variant. After a random
   variant (size/color) is selected, the actual cart price can differ.
