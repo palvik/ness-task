@@ -73,6 +73,12 @@ HEADLESS=false pytest -m e2e --headed
   into search results with fake price/ID data (e.g. `/itm/123456`) to blend
   in with real listings. Filtered out by validating that the item ID in the
   href matches eBay's real ID format (9+ digits).  
+- **CAPTCHA/anti-bot avoidance**: pagination advances by clicking the real
+  "Next" link rather than jumping via URL params, to avoid triggering eBay's
+  bot-detection (`splashui/challenge`) — confirmed experimentally that an
+  aggressive jump (e.g. `_pgn=999`) triggers it. `_go_to_next_page()` is
+  wrapped in try/except to gracefully stop pagination on any unexpected page
+  state (including a potential challenge page) rather than crashing the run.  
 
 ## Reports
 

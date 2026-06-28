@@ -71,8 +71,17 @@ class SearchPage(BasePage):
 
     def _go_to_next_page(self) -> bool:
         """Advance to the next page. Return True if it worked, else False."""
-        # TODO: check Next is present/enabled, click, wait for new results
-        raise NotImplementedError
+        next_link = self.page.get_by_role("link", name="Go to next search page")
+        if next_link.count() == 0:
+            return False
+
+        try:
+            next_link.click(timeout=5000)
+            expect(self.page).to_have_url(re.compile(r"_pgn=\d+"), timeout=5000)
+            expect(self.page.locator(self._RESULTS_ITEMS).first).to_be_visible()
+            return True
+        except Exception:
+            return False
 
     def search_items_by_name_under_price(
         self, query: str, max_price: float, limit: int = 5
