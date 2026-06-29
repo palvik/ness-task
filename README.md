@@ -56,7 +56,7 @@ HEADLESS=false pytest -m e2e --headed
 3. `add_items_to_cart(urls)` - random variant selection, screenshot per item.
 4. `assert_cart_total_not_exceeds(budget_per_item, items_count)`.
 
-## Assumptions & limitations  (TODO: fill in)
+## Assumptions & limitations
 - **Login**: guest browsing; no authentication. CAPTCHA explicitly out of scope.
 - **Currency**: eBay displays prices in the currency determined by the
   runner's geolocation (e.g. ILS when run from Israel, USD from the US).
@@ -75,10 +75,13 @@ HEADLESS=false pytest -m e2e --headed
   href matches eBay's real ID format (9+ digits).  
 - **CAPTCHA/anti-bot occurrences**: eBay's bot-detection (`splashui/challenge`)
   may occasionally trigger during automated runs, especially with rapid
-  sequential actions. Per the task brief, handling CAPTCHA is out of scope.
-  Pages check for the challenge URL and skip the test gracefully (`pytest.skip`)
-  rather than failing with an unrelated timeout. Small randomized delays
-  between cart additions reduce (but don't eliminate) the chance of triggering it.  
+  sequential actions (confirmed experimentally — an aggressive pagination
+  jump via `_pgn=999` triggered it). Per the task brief, handling CAPTCHA is
+  out of scope. Pagination advances via the real "Next" link rather than
+  URL jumps, and small randomized delays between cart additions
+  (`test_cart_flow.py`) reduce — but don't eliminate — the chance of
+  triggering it. If it does occur, the affected test will fail with a
+  timeout rather than a CAPTCHA-specific error.
 - **Variant price vs. search-result price**: the price shown in search
   results may reflect a default/lowest-priced variant. After a random
   variant (size/color) is selected, the actual cart price can differ.
