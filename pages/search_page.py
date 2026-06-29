@@ -1,12 +1,12 @@
 """SearchPage - search + price filter + pagination + URL collection."""
 
-import re
-
 from __future__ import annotations
 from pages.base_page import BasePage
 from core.config import CONFIG
 from utils.price_parser import parse_price
 from playwright.sync_api import expect
+
+import re
 
 class SearchPage(BasePage):
     # --- LOCATORS: verify on the live site; eBay class names rotate ---
