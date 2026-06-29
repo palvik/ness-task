@@ -109,6 +109,8 @@ to render it.
 | Static HTML file | `allure generate reports/allure-results --single-file -o reports/html` then open `reports/html/index.html` |
 | CI artifacts | Download the `allure-results` artifact from GitHub Actions, extract, then `allure serve path/to/allure-results` |
 
+**Live report**: https://palvik.github.io/ness-task/
+
 **Related artifacts**
 
 - Playwright traces: `reports/traces/*.zip` — `playwright show-trace reports/traces/<test_name>.zip`
