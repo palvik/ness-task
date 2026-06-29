@@ -1,0 +1,15 @@
+[32mINFO    [0m LoginPage:base_page.py:26 navigate -> https://www.ebay.com
+[32mINFO    [0m LoginPage:login_page.py:16 confirmed guest session (no sign-in detected)
+[32mINFO    [0m SearchPage:base_page.py:26 navigate -> https://www.ebay.com
+[32mINFO    [0m SearchPage:search_page.py:29 search opened for query='headphones'
+[32mINFO    [0m SearchPage:search_page.py:46 applied max price filter: 50
+[32mINFO    [0m ItemPage:base_page.py:26 navigate -> https://www.ebay.com/itm/235619322113
+[32mINFO    [0m ItemPage:item_page.py:42 selected variant 1/1: 'Gray' in listbox nid-fpd-20
+[32mINFO    [0m ItemPage:item_page.py:61 added item 235619322113 to cart
+[32mINFO    [0m ItemPage:base_page.py:26 navigate -> https://www.ebay.com/itm/187522271023
+[32mINFO    [0m ItemPage:item_page.py:42 selected variant 1/1: 'Clear NO MIC' in listbox nid-uq3-20
+[32mINFO    [0m ItemPage:item_page.py:61 added item 187522271023 to cart
+[32mINFO    [0m ItemPage:base_page.py:26 navigate -> https://www.ebay.com/itm/297619411291
+[32mINFO    [0m ItemPage:item_page.py:21 no variant selectors found, skipping
+[32mINFO    [0m ItemPage:item_page.py:61 added item 297619411291 to cart
+[32mINFO    [0m CartPage:base_page.py:26 navigate -> https://cart.ebay.com

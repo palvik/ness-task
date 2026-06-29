@@ -1,0 +1,15 @@
+2026-06-29 09:15:39,972 | INFO    | LoginPage | navigate -> https://www.ebay.com
+2026-06-29 09:15:41,575 | INFO    | LoginPage | confirmed guest session (no sign-in detected)
+2026-06-29 09:15:41,576 | INFO    | SearchPage | navigate -> https://www.ebay.com
+2026-06-29 09:15:45,061 | INFO    | SearchPage | search opened for query='headphones'
+2026-06-29 09:15:48,141 | INFO    | SearchPage | applied max price filter: 50
+2026-06-29 09:15:52,948 | INFO    | ItemPage | navigate -> https://www.ebay.com/itm/235619322113
+2026-06-29 09:15:55,266 | INFO    | ItemPage | selected variant 1/1: 'Gray' in listbox nid-fpd-20
+2026-06-29 09:15:57,368 | INFO    | ItemPage | added item 235619322113 to cart
+2026-06-29 09:15:58,937 | INFO    | ItemPage | navigate -> https://www.ebay.com/itm/187522271023
+2026-06-29 09:16:01,265 | INFO    | ItemPage | selected variant 1/1: 'Clear NO MIC' in listbox nid-uq3-20
+2026-06-29 09:16:04,221 | INFO    | ItemPage | added item 187522271023 to cart
+2026-06-29 09:16:05,959 | INFO    | ItemPage | navigate -> https://www.ebay.com/itm/297619411291
+2026-06-29 09:16:07,381 | INFO    | ItemPage | no variant selectors found, skipping
+2026-06-29 09:16:09,852 | INFO    | ItemPage | added item 297619411291 to cart
+2026-06-29 09:16:11,848 | INFO    | CartPage | navigate -> https://cart.ebay.com
