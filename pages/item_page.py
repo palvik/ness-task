@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import random
 import re
+
 from playwright.sync_api import expect
 from pages.base_page import BasePage
 
@@ -39,6 +40,14 @@ class ItemPage(BasePage):
             chosen = options.nth(random.randint(0, option_count - 1))
             value_name = chosen.get_attribute("data-sku-value-name")
             chosen.click()
+
+            listbox = self.page.locator(f"#{listbox_id}")
+            try:
+                expect(listbox).to_be_hidden(timeout=3000)
+            except AssertionError:
+                # some single-option listboxes don't auto-close; force it
+                self.page.keyboard.press("Escape")
+
             self.log.info(
                 "selected variant %d/%d: %r in listbox %s",
                 i + 1,
