@@ -116,4 +116,14 @@ to render it.
 - Playwright traces: `reports/traces/*.zip` — `playwright show-trace reports/traces/<test_name>.zip`
 - Screenshots: `reports/screenshots/`
 
-CI (GitHub Actions) uploads `allure-results` and `playwright-artifacts` as workflow artifacts.
+If you run the workflow manually (`workflow_dispatch`), it uploads
+`allure-results` and `playwright-artifacts` as workflow artifacts — see CI section below.
+
+## CI
+A GitHub Actions workflow (`.github/workflows/tests.yml`) is included and
+runs the full suite (unit + e2e). It's set to manual trigger only
+(`workflow_dispatch`) rather than on every push: e2e tests run against
+live eBay, and CI runners use datacenter IPs that are more likely to
+trigger eBay's anti-bot detection than a residential IP — making automatic
+CI runs unreliable for this kind of test. Tests are verified locally
+(see `reports/html/index.html` for the latest local run).
