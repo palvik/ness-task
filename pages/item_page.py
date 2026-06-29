@@ -7,9 +7,6 @@ from playwright.sync_api import expect
 from pages.base_page import BasePage
 
 class ItemPage(BasePage):
-    _ADD_TO_CART_BTN = None   # TODO: smart locator
-    _VARIANT_SELECTS = None   # TODO: size/color/qty selectors (may be absent)
-
     def open(self, url: str) -> None:
         """Open the item page at `url`."""
         self.goto(url)

@@ -1,17 +1,12 @@
-"""SearchPage - search + price filter + pagination + URL collection.
+"""SearchPage - search + price filter + pagination + URL collection."""
 
-This is the core of the 35% (robustness & smart locators). Implement the
-method bodies yourself and verify every locator against live eBay
-(playwright codegen / DevTools). XPath is required for result extraction
-per the task; prefer get_by_role/label for the filter inputs and Next button.
-"""
+import re
+
 from __future__ import annotations
 from pages.base_page import BasePage
 from core.config import CONFIG
 from utils.price_parser import parse_price
-import re
 from playwright.sync_api import expect
-
 
 class SearchPage(BasePage):
     # --- LOCATORS: verify on the live site; eBay class names rotate ---
@@ -20,8 +15,6 @@ class SearchPage(BasePage):
     _ITEM_LINK = "xpath=.//a[contains(@href,'/itm/')]"
     _ITEM_PRICE = "xpath=.//span[contains(@class,'s-card__price')]"
     _PRICE_MAX_INPUT = "xpath=.//input[contains(@name,'maxPrice')]"
-    _APPLY_PRICE_BTN = None               # TODO
-    _NEXT_BUTTON = None                   # TODO: e.g. get_by_role("button", name="Next")
     _SEARCH_INPUT_NAME = "Search for anything"
     _SEARCH_BUTTON_NAME = "Search"
 
