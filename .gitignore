@@ -16,7 +16,6 @@ tools/allure/
 reports/allure-results/
 reports/screenshots/
 reports/traces/
-reports/html/
 allure-results/
 test-results/
 *.zip
