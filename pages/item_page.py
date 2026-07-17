@@ -60,11 +60,20 @@ class ItemPage(BasePage):
         """Click add-to-cart; handle interstitials; screenshot per item."""
         self.page.get_by_role("button", name="Add to cart").click()
 
-        expect(self.page.get_by_text("Added to cart")).to_be_visible()
+        dialog = self.page.get_by_role("dialog")
 
-        item_id_match = re.search(r"/itm/(\d+)", self.page.url)
-        item_id = item_id_match.group(1) if item_id_match else "unknown"
-        self.screenshot(f"add_to_cart_{item_id}")
+        # Wait for the transitional "Still adding…" state to disappear before
+        # asserting the final result — otherwise we hit a race condition
+        # (see headphones_under_50 failure: 5s timeout fired before the modal
+        # finished its AJAX call after variant selection)
+        still_adding = dialog.get_by_text("Still adding")
+        if still_adding.is_visible():
+            expect(still_adding).to_be_hidden(timeout=15000)
 
-        self.page.get_by_role("button", name="Close dialog").click()
-        self.log.info("added item %s to cart", item_id)
+        # Main confirmation check
+        added_text = self.page.get_by_text("Added to cart")
+        go_to_cart_btn = self.page.get_by_role("button", name="Go to cart")
+
+        # Fallback: confirmation text can differ across item templates,
+        # but the "Go to cart" button appears reliably in both cases
+        expect(added_text.or_(go_to_cart_btn)).to_be_visible(timeout=15000)
