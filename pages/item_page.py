@@ -7,6 +7,9 @@ import re
 from playwright.sync_api import expect
 from pages.base_page import BasePage
 
+_ITEM_ID_RE = re.compile(r"/itm/(\d+)")
+
+
 class ItemPage(BasePage):
     def open(self, url: str) -> None:
         """Open the item page at `url`."""
@@ -62,10 +65,9 @@ class ItemPage(BasePage):
 
         dialog = self.page.get_by_role("dialog")
 
-        # Wait for the transitional "Still adding…" state to disappear before
-        # asserting the final result — otherwise we hit a race condition
-        # (see headphones_under_50 failure: 5s timeout fired before the modal
-        # finished its AJAX call after variant selection)
+        # eBay shows a transitional "Still adding…" state after variant
+        # selection (extra AJAX round-trip); asserting the final state too
+        # early races that transition and produces an intermittent failure.
         still_adding = dialog.get_by_text("Still adding")
         if still_adding.is_visible():
             expect(still_adding).to_be_hidden(timeout=15000)
@@ -77,3 +79,8 @@ class ItemPage(BasePage):
         # Fallback: confirmation text can differ across item templates,
         # but the "Go to cart" button appears reliably in both cases
         expect(added_text.or_(go_to_cart_btn)).to_be_visible(timeout=15000)
+
+        match = _ITEM_ID_RE.search(self.page.url)
+        item_id = match.group(1) if match else "unknown"
+        self.screenshot(f"item_added_{item_id}")
+        self.log.info("added item %s to cart", item_id)

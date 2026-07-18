@@ -31,23 +31,15 @@ def _as_bool(value: str, default: bool) -> bool:
 @dataclass
 class Config:
     base_url: str
-    search_path: str
     browser_name: str
     headless: bool
     slow_mo_ms: int
     viewport: dict[str, int]
     default_timeout_ms: int
     navigation_timeout_ms: int
-    currency: str
     locale: str
     trace: bool
-    screenshots: bool
-    login_mode: str
     raw: dict[str, Any] = field(repr=False, default_factory=dict)
-
-    @property
-    def search_url(self) -> str:
-        return f"{self.base_url}{self.search_path}"
 
 
 def load_config() -> Config:
@@ -57,18 +49,14 @@ def load_config() -> Config:
     a = y["artifacts"]
     return Config(
         base_url=os.getenv("BASE_URL", y["base_url"]),
-        search_path=y["search_path"],
         browser_name=os.getenv("BROWSER", b["name"]),
         headless=_as_bool(os.getenv("HEADLESS"), b["headless"]),
         slow_mo_ms=int(os.getenv("SLOW_MO_MS", b["slow_mo_ms"])),
         viewport=b["viewport"],
         default_timeout_ms=t["default_ms"],
         navigation_timeout_ms=t["navigation_ms"],
-        currency=y["currency"],
         locale=y["locale"],
         trace=_as_bool(os.getenv("TRACE"), a["trace"]),
-        screenshots=_as_bool(os.getenv("SCREENSHOTS"), a["screenshots"]),
-        login_mode=os.getenv("LOGIN_MODE", "guest"),
         raw=y,
     )
 

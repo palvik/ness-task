@@ -37,7 +37,7 @@ class BasePage:
 
     def _dismiss_consent_if_present(self) -> None:
         """Close cookie/consent banner if it appears. No-op if absent."""
-        banner = self.page.get_by_role("button", name="Accept all")  # TODO: check the text
+        banner = self.page.get_by_role("button", name="Accept all")
         try:
             if banner.is_visible(timeout=2000):
                 banner.click()

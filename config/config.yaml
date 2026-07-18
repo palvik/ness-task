@@ -1,6 +1,5 @@
 # Default profile. Values can be overridden via .env (see core/config.py).
 base_url: "https://www.ebay.com"
-search_path: "/sch/i.html"
 
 browser:
   name: "chromium"        # chromium | firefox | webkit
@@ -14,10 +13,10 @@ timeouts:
   default_ms: 15000       # Playwright auto-wait ceiling
   navigation_ms: 30000
 
-# Domain assumptions (document these in README)
-currency: "USD"           # we run against ebay.com
+# Domain assumption (document in README): actual displayed currency depends
+# on the runner's geolocation, not on a config value - parse_price() is
+# currency-agnostic to handle this.
 locale: "en-US"
 
 artifacts:
   trace: true             # write trace.zip per test
-  screenshots: true       # capture on add-to-cart and on failure

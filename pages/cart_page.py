@@ -19,7 +19,7 @@ class CartPage(BasePage):
         # eBay occasionally serves an hCaptcha verification page instead of
         # the cart (anti-bot check, more likely under headless/datacenter
         # conditions). This is a known limitation of the target site, not a
-        # bug in the locator - detect it early and fail with a clear reason
+        # bug in the locator - detect it early and skip with a clear reason
         # instead of a confusing "locator not found" timeout.
         captcha_notice = self.page.get_by_text("Please verify yourself to continue")
         if captcha_notice.is_visible(timeout=2000):
@@ -32,14 +32,12 @@ class CartPage(BasePage):
         try:
             subtotal_text = self.page.locator(self._CART_SUBTOTAL).inner_text(timeout=15000)
         except PlaywrightTimeoutError:
-            # Locator not found within timeout - dump page state for diagnosis
-            # instead of guessing at the selector blind
-            self.page.screenshot(path="debug_cart_failure.png", full_page=True)
-            with open("debug_cart_failure.html", "w", encoding="utf-8") as f:
-                f.write(self.page.content())
+            # Locator not found within timeout for an unknown reason (the
+            # known captcha case is already handled above) - attach a
+            # screenshot to Allure for diagnosis instead of guessing blind.
+            self.screenshot("cart_subtotal_not_found")
             self.log.error(
-                "CART_SUBTOTAL locator not found; dumped screenshot and HTML "
-                "to debug_cart_failure.png / debug_cart_failure.html"
+                "CART_SUBTOTAL locator not found - see attached screenshot in Allure"
             )
             raise
 

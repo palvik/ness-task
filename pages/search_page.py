@@ -8,13 +8,13 @@ from playwright.sync_api import expect
 
 import re
 
+
 class SearchPage(BasePage):
     # --- LOCATORS: verify on the live site; eBay class names rotate ---
     _ITEM_ID_RE = re.compile(r"/itm/(\d{9,})")
-    _RESULTS_ITEMS = "xpath=//li[contains(@class,'s-card')]" 
+    _RESULTS_ITEMS = "xpath=//li[contains(@class,'s-card')]"
     _ITEM_LINK = "xpath=.//a[contains(@href,'/itm/')]"
     _ITEM_PRICE = "xpath=.//span[contains(@class,'s-card__price')]"
-    _PRICE_MAX_INPUT = "xpath=.//input[contains(@name,'maxPrice')]"
     _SEARCH_INPUT_NAME = "Search for anything"
     _SEARCH_BUTTON_NAME = "Search"
 
@@ -26,8 +26,7 @@ class SearchPage(BasePage):
         self.page.get_by_role("button", name=self._SEARCH_BUTTON_NAME, exact=True).click()
         expect(self.page).to_have_url(re.compile(r"/sch/"))
         expect(self.page.locator(self._RESULTS_ITEMS).first).to_be_visible()
-        self.log.info("search opened for query=%r", query)        
-
+        self.log.info("search opened for query=%r", query)
 
     def apply_max_price(self, max_price: float) -> None:
         """Use the page's min/max price filter to cap at max_price."""
@@ -62,7 +61,7 @@ class SearchPage(BasePage):
                     if href:
                         clean_href = href.split("?")[0]
                         if self._ITEM_ID_RE.search(clean_href):
-                            hrefs.append(clean_href)        
+                            hrefs.append(clean_href)
             except ValueError:
                 continue
         return hrefs

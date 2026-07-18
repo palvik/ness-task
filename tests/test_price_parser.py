@@ -1,7 +1,4 @@
-"""Unit tests for the price parser (fast, no browser).
-
-GRADED: fill these in as you implement parse_price. Parametrize the cases.
-"""
+"""Unit tests for the price parser (fast, no browser)."""
 import pytest
 
 from utils.price_parser import parse_price
