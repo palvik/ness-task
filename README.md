@@ -82,6 +82,14 @@ HEADLESS=false pytest -m e2e --headed
   (`test_cart_flow.py`) reduce — but don't eliminate — the chance of
   triggering it. If it does occur, the affected test will fail with a
   timeout rather than a CAPTCHA-specific error.
+- **Cart step CAPTCHA handling**: `CartPage.get_cart_total()` specifically
+  checks for eBay's hCaptcha verification page ("Please verify yourself to
+  continue") before reading the subtotal. If detected, the test is marked
+  `skipped` (not `failed`) with a screenshot attached
+  (`captcha_blocked.png`), so a bot-check interruption is visually
+  distinguishable in the Allure report from an actual locator/assertion bug.
+  This is a detection/reporting improvement only — no CAPTCHA-solving is
+  attempted, consistent with the task brief.
 - **Variant price vs. search-result price**: the price shown in search
   results may reflect a default/lowest-priced variant. After a random
   variant (size/color) is selected, the actual cart price can differ.

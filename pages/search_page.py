@@ -39,7 +39,12 @@ class SearchPage(BasePage):
         # fill() sets the value programmatically and doesn't trigger them.
         max_input.press_sequentially(str(int(max_price)))
 
-        self.page.get_by_role("button", name="Submit price range").click()
+        # eBay's own JS re-enables the submit button asynchronously after the
+        # last keystroke (internal debounce/state update). Wait for that state
+        # explicitly instead of clicking immediately - avoids racing it.
+        submit_btn = self.page.get_by_role("button", name="Submit price range")
+        expect(submit_btn).to_be_enabled(timeout=5000)
+        submit_btn.click()
 
         expect(self.page).to_have_url(re.compile(r"_udhi=\d+"))
         expect(self.page.locator(self._RESULTS_ITEMS).first).to_be_visible()
@@ -66,6 +71,7 @@ class SearchPage(BasePage):
         """Advance to the next page. Return True if it worked, else False."""
         next_link = self.page.get_by_role("link", name="Go to next search page")
         if next_link.count() == 0:
+            self.log.info("no 'Next' link found - reached the last page")
             return False
 
         try:
@@ -73,7 +79,12 @@ class SearchPage(BasePage):
             expect(self.page).to_have_url(re.compile(r"_pgn=\d+"), timeout=5000)
             expect(self.page.locator(self._RESULTS_ITEMS).first).to_be_visible()
             return True
-        except Exception:
+        except Exception as e:
+            # Don't swallow this silently - it could be a real "last page" case,
+            # but it could equally be an anti-bot interruption or a broken
+            # locator. Logging the exception keeps pagination failures
+            # diagnosable instead of silently returning fewer results.
+            self.log.warning("could not advance to next page: %s", e)
             return False
 
     def search_items_by_name_under_price(
