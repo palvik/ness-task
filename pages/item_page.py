@@ -34,10 +34,19 @@ class ItemPage(BasePage):
 
             btn.click()
 
-            options = self.page.locator(f"#{listbox_id} [data-sku-value-name]")
+            # Exclude out-of-stock/disabled options (aria-disabled="true") -
+            # picking one at random causes an unrecoverable timeout, since a
+            # disabled option never becomes clickable no matter how long we wait.
+            options = self.page.locator(
+                f"#{listbox_id} [data-sku-value-name]:not([aria-disabled='true'])"
+            )
             option_count = options.count()
             if option_count == 0:
-                self.log.warning("no options in listbox %s, skipping", listbox_id)
+                self.log.warning(
+                    "no available (non-disabled) options in listbox %s, skipping",
+                    listbox_id,
+                )
+                self.page.keyboard.press("Escape")
                 continue
 
             chosen = options.nth(random.randint(0, option_count - 1))
