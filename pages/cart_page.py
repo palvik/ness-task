@@ -9,7 +9,11 @@ from utils.price_parser import parse_price
 
 
 class CartPage(BasePage):
-    _CART_SUBTOTAL = "[data-test-id='SUBTOTAL']"
+    # "Items (N)" line - merchandise subtotal only, excludes shipping/discounts.
+    # NOTE: data-test-id="SUBTOTAL" points to the *estimated total* row
+    # (items + shipping - discounts), not the items subtotal - using it
+    # caused a false failure when shipping cost was unusually high.
+    _CART_SUBTOTAL = "[data-test-id='ITEM_TOTAL']"
 
     def open(self) -> None:
         """Navigate to cart."""
@@ -41,4 +45,5 @@ class CartPage(BasePage):
             )
             raise
 
+        self.log.info("raw items subtotal text: %r", subtotal_text)
         return parse_price(subtotal_text)

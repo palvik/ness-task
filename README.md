@@ -95,6 +95,13 @@ HEADLESS=false pytest -m e2e --headed
   variant (size/color) is selected, the actual cart price can differ.
   `budget_per_item` in test data includes margin for this; it is not a
   strict re-validation of the search-time `max_price`.  
+- **Cart total locator**: eBay's cart page has two similarly-named totals -
+  `data-test-id="SUBTOTAL"` (estimated grand total: items + shipping -
+  discounts) and `data-test-id="ITEM_TOTAL"` ("Items (N)" line: merchandise
+  only). `CartPage.get_cart_total()` uses `ITEM_TOTAL`, matching the task's
+  intent of comparing item prices against budget, independent of shipping
+  cost (which varies by seller/region and isn't part of the price
+  assertion).  
 
 ## Reports
 
