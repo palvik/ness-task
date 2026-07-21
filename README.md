@@ -101,7 +101,10 @@ HEADLESS=false pytest -m e2e --headed
   only). `CartPage.get_cart_total()` uses `ITEM_TOTAL`, matching the task's
   intent of comparing item prices against budget, independent of shipping
   cost (which varies by seller/region and isn't part of the price
-  assertion).  
+  assertion).
+- **Auction items**: listings with "Place bid" instead of "Add to cart"
+  are skipped silently during `addItemsToCart`; the cart total assertion
+  uses the number of URLs found by search, not the number actually added. 
 
 ## Reports
 

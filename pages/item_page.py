@@ -69,8 +69,16 @@ class ItemPage(BasePage):
             )
 
     def add_to_cart(self) -> None:
-        """Click add-to-cart; handle interstitials; screenshot per item."""
-        self.page.get_by_role("button", name="Add to cart").click()
+        """Click add-to-cart; handle interstitials; screenshot per item.
+
+        Skips auction-only items ('Place bid') that have no Add to Cart button.
+        """
+        atc_btn = self.page.get_by_role("button", name="Add to cart")
+        if atc_btn.count() == 0:
+            self.log.info("no 'Add to cart' button found (auction item?), skipping")
+            return
+
+        atc_btn.click()
 
         dialog = self.page.get_by_role("dialog")
 
