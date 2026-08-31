@@ -5,10 +5,7 @@ mirrors Playwright's model; the trace is recorded at the *context* level and
 saved per test, so every run leaves a trace.zip + failure screenshot.
 """
 from __future__ import annotations
-
 from pathlib import Path
-
-
 import allure
 import pytest
 from playwright.sync_api import Browser, BrowserContext, Page, sync_playwright, expect
