@@ -6,14 +6,15 @@ saved per test, so every run leaves a trace.zip + failure screenshot.
 """
 from __future__ import annotations
 
-import os
 from pathlib import Path
+
 
 import allure
 import pytest
-from playwright.sync_api import Browser, BrowserContext, Page, sync_playwright
-
+from playwright.sync_api import Browser, BrowserContext, Page, sync_playwright, expect
 from core.config import CONFIG
+
+expect.set_options(timeout=CONFIG.default_timeout_ms)
 
 REPORTS = Path(__file__).resolve().parent / "reports"
 TRACES = REPORTS / "traces"
