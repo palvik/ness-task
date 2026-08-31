@@ -1,11 +1,27 @@
-name: e2e-tests
+name: tests
 
 on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
+    inputs:
+      run_e2e:
+        description: "Run live eBay e2e suite (may hit anti-bot from CI IPs)"
+        type: boolean
+        default: true
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  test:
+  # Deterministic, no browser, no network. This is the job the badge should reflect.
+  unit:
+    name: Unit tests
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
 
@@ -13,17 +29,48 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
+          cache-dependency-path: requirements.txt
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          playwright install --with-deps chromium
 
-      - name: Run tests
+      # No `|| true`: a failing test must fail the job.
+      - name: Run unit tests
+        run: pytest -m unit
+
+  # Live eBay. Manual only, because CI runners use datacenter IPs that
+  # trigger eBay's bot detection far more often than a residential IP.
+  e2e:
+    name: E2E (live eBay)
+    if: github.event_name == 'workflow_dispatch' && inputs.run_e2e
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Install Playwright browsers
+        run: playwright install --with-deps chromium
+
+      # Still no `|| true`. The upload steps below use `if: always()`,
+      # which already guarantees artifacts are collected on failure.
+      - name: Run e2e tests
         env:
           HEADLESS: "true"
-        run: pytest || true   # keep going so the report always uploads
+          TRACE: "true"
+        run: pytest -m e2e
 
       - name: Upload Allure results
         if: always()
@@ -31,6 +78,8 @@ jobs:
         with:
           name: allure-results
           path: reports/allure-results
+          if-no-files-found: warn
+          retention-days: 14
 
       - name: Upload traces & screenshots
         if: always()
@@ -40,3 +89,7 @@ jobs:
           path: |
             reports/traces
             reports/screenshots
+          # conftest.py deletes traces for passing tests, so an all-green
+          # run legitimately leaves these directories empty.
+          if-no-files-found: ignore
+          retention-days: 14
